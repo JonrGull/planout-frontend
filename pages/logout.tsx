@@ -1,7 +1,7 @@
-import Link from 'next/link';
-import React from 'react';
+import Link from "next/link";
+import React from "react";
 
-import { withProtected } from '../src/hook/route';
+import { withProtected } from "../src/hook/route";
 
 function Logout({ auth }: any) {
   const { logout } = auth;
@@ -15,7 +15,7 @@ function Logout({ auth }: any) {
         Logout
       </button>
       <button className="border  border-red-600 px-10 py-2 mt-2">
-        <Link href="/">Cancel</Link>
+        <Link href={"/"}>Cancel</Link>
       </button>
     </div>
   );
