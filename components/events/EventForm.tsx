@@ -3,32 +3,46 @@ import React, { useState } from "react";
 import { FaPlusCircle } from "react-icons/fa";
 import useAuth from "../../src/hook/auth";
 import EventModal from "./EventModal";
+import { io } from "socket.io-client";
+const socket = io("https://cc26-planout.herokuapp.com/");
 
 export default function EventForm({ getEvents }: any) {
   const [showModal, setShowModal] = useState(false);
   const [eventName, setEventName] = useState("");
   const [eventDate, setEventDate] = useState("");
-  const [eventTime, setEventTime] = useState("");
   const [eventBudget, setEventBudget] = useState("");
-  const { token } = useAuth() as any;
+  const { token, user } = useAuth() as any;
 
-  const createEvent = () => {
-    const dataObj = {
-      event_name: eventName,
-      host: 1,
-      date: eventDate,
-      budget: eventBudget,
-    };
-    submitPostReq(dataObj);
+  function newEventNotification() {
+    socket.emit("eventCreated", { eventname: eventName });
+  }
+
+  const dataObj = {
+    event_name: eventName,
+    host: user.uid,
+    date: eventDate,
+    budget: eventBudget,
   };
 
-  const submitPostReq = async (data: object) => {
+  const handleCreateEvent = async () => {
     try {
-      await axios.post("https://cc26-planout.herokuapp.com/events", data, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      });
+      if (dataObj.budget.length > 8) {
+        alert("Please limit to 8 digits");
+        return;
+      }
+      const response = await axios.post(
+        "https://cc26-planout.herokuapp.com/events",
+        dataObj,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+      if (response.status === 200) {
+        getEvents();
+        newEventNotification();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -36,28 +50,23 @@ export default function EventForm({ getEvents }: any) {
 
   return (
     <div>
-      {/* <button
-        className="block text-white float-right mb-5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        type="button"
-        data-modal-toggle="authentication-modal"
-        onClick={() => setShowModal(true)}
-      > */}
-      <FaPlusCircle
+      <button
+        title="Add event"
         data-modal-toggle="small-modal"
         onClick={() => setShowModal(true)}
-        className="float-right md:mr-48 text-2xl hover:cursor-pointer  hover:fill-orange-300"
-      />
-
+        className="bg-buttonColor font-body text-xl ml-8 mt-4 font-medium px-4 py-2 rounded-md shadow-md text-white flex transition hover:bg-blue-300"
+      >
+        <FaPlusCircle className="relative top-1 mr-1" />
+        Add Event
+      </button>
       <div className="m-auto bg-black">
         {showModal && (
           <EventModal
             setShowModal={setShowModal}
             setEventName={setEventName}
             setEventDate={setEventDate}
-            setEventTime={setEventTime}
             setEventBudget={setEventBudget}
-            createEvent={createEvent}
-            getEvents={getEvents}
+            handleCreateEvent={handleCreateEvent}
           />
         )}
       </div>

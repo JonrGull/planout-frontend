@@ -1,19 +1,23 @@
-import React from "react";
+import { MouseEvent } from "react";
 
-export default function TaskModal({
+export default function AssignTaskModal({
   setShowModal,
-  setTaskDescription,
-  setTaskCost,
-  createTask,
+  assignTask,
+  taskId,
+  eventUsers,
+  setSelectedUser,
 }: {
   setShowModal: (showModal: boolean) => void;
-  setTaskDescription: (taskDescription: string) => void;
-  setTaskCost: (taskCost: string) => void;
-  createTask: () => void;
+  assignTask: (id: string) => void;
+  taskId: string;
+  eventUsers: any;
+  setSelectedUser: (user: string) => void;
 }) {
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleSubmit = (
+    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
+  ) => {
     e.preventDefault();
-    createTask();
+    assignTask(taskId);
     setShowModal(false);
   };
 
@@ -64,51 +68,48 @@ export default function TaskModal({
 
                 <div className="py-6 px-6 lg:px-8">
                   <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-white">
-                    Enter information about your task
+                    Assign a user to complete the task:
                   </h3>
+                  <div className="flex flex-wrap -mx-3 mb-6">
+                    {eventUsers.map((user: any) => (
+                      <div
+                        key={user.id}
+                        className="w-full md:w-1/2 px-3 mb-6 md:mb-0"
+                      >
+                        <label
+                          className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                          htmlFor={`user-${user.id}`}
+                        >
+                          {user.firstName}
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-0 flex items-center">
+                            <svg
+                              className="h-5 w-5 text-gray-500"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                              xmlns="http://www.w3.org/2000/svg"
+                            ></svg>
+                          </div>
+                          <input
+                            id={`user-${user.id}`}
+                            type="radio"
+                            name="user"
+                            value={user.id}
+                            className="form-radio h-5 w-5 text-gray-600 transition-colors duration-200 ease-in-out"
+                            onChange={() => setSelectedUser(user.id)}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                   <form className="space-y-6" action="#">
-                    <div>
-                      <label
-                        htmlFor="event-name"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                      >
-                        Task description
-                      </label>
-                      <input
-                        type="text"
-                        name="event_name"
-                        id="event_name"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                        placeholder="Enter task"
-                        onChange={(e) => setTaskDescription(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="budget"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                      >
-                        Cost
-                      </label>
-                      <input
-                        defaultValue="0"
-                        type="number"
-                        name="budget"
-                        id="budget"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                        min="0"
-                        onChange={(e) => setTaskCost(e.target.value)}
-                        required
-                      />
-                    </div>
-
                     <button
                       type="submit"
                       className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                       onClick={(e) => handleSubmit(e)}
                     >
-                      Create Task
+                      Assign
                     </button>
                   </form>
                 </div>
